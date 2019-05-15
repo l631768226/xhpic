@@ -67,13 +67,15 @@ def fetch_all_answers(url):
         #total = ret.json()['paging']['totals']
         ret = fetch_ans(session, q_id, limit, offset)
         answers+=ret['data']
-        is_end= ret['paging']['is_start']
+        is_end= ret['paging']['is_end']
         print("Offset: ",offset)
         print("is_end: ",is_end)
         s=ret['paging']
         # print(ret.json()['paging'])
         # print(ret.json()['data']['title'])
         offset+=limit
+    print("it is over")
+    print(len(answers))
     return answers
 
 # 正则匹配所有图片格式（在text中匹配）
@@ -91,11 +93,18 @@ def grep_image_urls(text):
     return imgs
 
 # url = "https://www.zhihu.com/question/31983868"
-url = "https://www.zhihu.com/question/46435597"
+# url = "https://www.zhihu.com/question/46435597"
+url = "https://www.zhihu.com/question/297715922"
 # 将所有的网页内容提取出来answers+=ret.json()['data']
 answers=fetch_all_answers(url)
-folder = '31983868'
+folder = '297715922'
 for ans in answers:
-    imgs = grep_image_urls(ans['content'])
-    for url in imgs:
-        download(folder,url)
+    # 获取点赞数
+    voteCount = ans['voteup_count']
+    if voteCount > 10:
+        imgs = grep_image_urls(ans['content'])
+        for url in imgs:
+            download(folder,url)
+    else:
+        print("点赞数不足")
+        pass
